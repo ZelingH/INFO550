@@ -1,0 +1,121 @@
+---
+title: "ALMI_CAT: Imputation for Large-Scale Association Testing Automated Pipline"
+author: "Zeling He"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output: 
+  html_document:
+    toc: yes
+    highlights: pygments
+---
+
+## Overview
+
+As rich genetic and phenotypic data are increasingly being captured in large-scale real world data (RWD), they become promising resources for discovery novel genotype-phenotype associations. However, despite the potential of such large-scale RWD, missing data is a common problem that can have a substantial impact on the results of association analyses.
+
+The ALMI_CAT package implements accelerated large-scale multiple imputation (**ALMI**) algorithm for RWD that can efficiently impute a large number of variables, as well as a robust calibrated association testing (**CAT**) that corrects for spurious associations induced by imputation to control the type I error. ALMI_CAT begins with an observational data set with missing values, and a data dictionary classified all variables in the data set into binary, ordinal and continuous. The standardized steps include:
+
+* filter out variables with high missing rates and low minority class frequencies.
+* select potential predictors for building the imputation models.
+* running automated procedures for paralleled multiple imputation.
+* performing association tests between the imputed data and a fully observed genetic or biological marker of interest (under developement)
+
+
+## Installation
+
+(Under development)*install.packages("ALMI_CAT")*
+
+## Main Steps
+
+(Under development)*library(ALMI_CAT)*
+
+<!--
+	Package is under development. Code will be reformatted later.
+-->
+
+```{r, document-option, echo = FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+include_code = TRUE
+```
+
+```{r, wrap-up, echo = FALSE}
+
+## Import: pander
+library(pander)
+## Depends:
+library(ggplot2)
+library(glmnet)
+library(ordinalNet)
+library(doParallel)
+
+## functions in a source file
+source("Fun.R")
+```
+
+Load data and data dictionary into R. The dictionary must contain at least two variables: **name** refers to the variable names and **type** refers to the variable type (binary, ordinal and/or continuous)
+
+```{r, load-data}
+sample_data = read.csv("sample_data.csv")
+dictionary = read.csv("dict.csv")
+
+head(dictionary)
+```
+
+In the sample data, there are `r sum(dictionary$type == "binary")` binary variables, `r sum(dictionary$type == "ordinal")` ordinal variables and `r sum(dictionary$type == "continuous")` continuous variables.
+
+### 1. Data Filtering
+
+This step filters out variables with high missing rates and low minority frequencies. The default settings are:
+* for binary & ordinalvariables: missing rates >= 0.90 and low of minority class frequencies <= 0.05
+* for continuous variables: missing rates > 0.90
+* If you would like to process without filtering, please set missing_rate_control = 1. Notice that processing without filtering may lead to error messages in the imputation models. 
+
+The function will return a list consists of the filtered data and an updated dictionary marking which variables have past the filter.
+
+
+```{r, StepI-filtering}
+stepI_filtering_list = 
+  stepI_filtering(data = sample_data, dict = dictionary, missing_rate_control = 0.90, low_frequency_control = 0.05)
+sample_data_filtered = stepI_filtering_list$data_filtered
+dictionary_updated = stepI_filtering_list$dictionary
+```
+
+After filtering, `r ncol(sample_data) - ncol(sample_data_filtered )` variables are removed for imputation.
+
+(Optional) generate summary of missingness by variable types.
+```{r, missingness, fig.width=12, fig.height=6}
+missing = summary_missingness(data = sample_data_filtered, dict = dictionary_updated)
+missing$plot_missingness
+missing$tab_missingness
+```
+
+### 2. Variables Selections
+
+This step identities variables that would be included as predictors in the imputation model based on Pearson's correlation tests. In addtion, for each variable waiting to be imputed, we exclude predictors with the same missing patterns. The default settings are:
+
+* no adjusted for false discovery rate. See **?p.adjust** for options on adjustment methods.
+* screening variables with correlation tests' p values (adjusted p-values) > 0.05.
+
+The function will return a list of potential predictors for each variables waiting to be imputed.
+
+```{r, StepII-selections, message = FALSE}
+screened_list = stepII_screening(Ymat = sample_data_filtered, Xmat = sample_data_filtered)
+```
+
+The list of potential predictors selected for `r names(screened_list)[[1]]` is  `r screened_list[[1]]` 
+
+
+### 3. Parallel Imputation Models
+
+To build the imputation models, users need to specify the variables waiting to be imputed as **Ymat**, the matrix of all potential predictors **Xmat**, the dictionary with the type of each variable, and the list of potential predictors created in the step above.
+
+The function will return a matrix consists of both observed values and the imputed results.
+
+```{r, stepIII-imputation}
+imputed_result_mat = impute_scale(Ymat = sample_data_filtered, Xmat = sample_data_filtered, dict = dictionary_updated, vars_list = screened_list)
+```
+
+Peak the results of the first five variables:
+```{r}
+pander::pander(imputed_result_mat[,1:5])
+```
+
