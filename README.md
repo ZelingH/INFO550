@@ -13,13 +13,8 @@ ALMI implements accelerated large-scale multiple imputation algorithm for RWD th
 
 The data we used for illustration is called `sample_data.csv`, with its dictionary file `dict.csv`. They are both included in this repository.
 
-To fork this repository, run
 
-```bash
-git clone https://github.com/ZelingH/INFO550.git
-
-```
- and go to the folder `project`. Before analyzing the data, you will first need to syhcronize your local directory. Open R under `project` folder and run
+ After forking this repository and clone it to your local machine, you will need to syhcronize your local directory. Open R under `project` folder and run
 
 ```R
 renv::restore()
