@@ -22,7 +22,7 @@ You also need to source the script of functions used in this analysis `Fun.R`. T
 To execute the analysis, from the project folder you can run 
 
 ``` bash
-Rscript -e "rmarkdown::render('example.Rmd')"
+Rscript -e "rmarkdown::render('Rmd/example.Rmd')"
 ```
 
 This will create a file called `example.html` output in your directory that contains the results. Please be patient - it takes a few minutes to impute around 100 mixed types of variables. You may see some warning messages regarding the ties when computing p values of correlation tests - it will not affect the results and please ignore them.
