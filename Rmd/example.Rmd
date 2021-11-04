@@ -33,6 +33,7 @@ The ALMI_CAT package implements accelerated large-scale multiple imputation (**A
 -->
 
 ```{r, document-option, echo = FALSE}
+here::i_am('Rmd/example.Rmd')
 knitr::opts_chunk$set(warning=FALSE, message=FALSE)
 include_code = TRUE
 ```
@@ -48,14 +49,14 @@ library(ordinalNet)
 library(doParallel)
 
 ## functions in a source file
-source("Fun.R")
+source(here::here('R', 'Fun.R')) 
 ```
 
 Load data and data dictionary into R. The dictionary must contain at least two variables: **name** refers to the variable names and **type** refers to the variable type (binary, ordinal and/or continuous)
 
 ```{r, load-data}
-sample_data = read.csv("sample_data.csv")
-dictionary = read.csv("dict.csv")
+sample_data = read.csv(here::here('data','sample_data.csv'))
+dictionary = read.csv(here::here('data', 'dict.csv'))
 
 head(dictionary)
 ```
