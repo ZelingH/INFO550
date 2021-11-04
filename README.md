@@ -9,7 +9,7 @@ To analyze the data you will need to install some `R` packages. The required pac
 installed_pkgs <- row.names(installed.packages())
 pkgs <- c("pander", "ggplot2", "glmnet", "ordinalNet", "doParallel")
 for(p in pkgs){
-	if(!(p %in% install_pkgs)){
+	if(!(p %in% installed_pkgs)){
 		install.packages(p)
 	}
 }
