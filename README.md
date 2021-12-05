@@ -28,7 +28,7 @@ Step 2. Lauch Docker on your local desktop and pull the container image from Doc
 docker pull liddyhe/info550 
 ```
 
-Step 3. Get the current working directory first, then mount directories to retrieve analysis result (called 'example.html). The result will be saved under `/Rmd` subfolder.
+Step 3. Get the current working directory first, then mount directories to retrieve analysis result `example.html`. The result will be saved under `/Rmd` subfolder.
 
 ```bash
 pwd
