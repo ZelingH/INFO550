@@ -8,7 +8,7 @@ local({
   project <- getwd()
 
   # allow environment variable to control activation
-  activate <- Sys.getenv("RENV_ACTIVATE_PROJECT")
+  activate <- FALSE
   if (!nzchar(activate)) {
 
     # don't auto-activate when R CMD INSTALL is running
