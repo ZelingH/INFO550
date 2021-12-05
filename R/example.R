@@ -1,17 +1,16 @@
 rm(list = ls())
-here::i_am("R/example.R") 
+here::i_am('R/example.R')
 
-source(here::here('R', 'Fun.R')) 
+source("Fun.R")
 library(ggplot2)
 library(glmnet)
 library(ordinalNet)
 library(doParallel)
-
 #######################
 ### Input
 #######################
-sample_data = read.csv(here::here('data','sample_data.csv'))
-dictionary = read.csv(here::here('data', 'dict.csv'))
+sample_data = read.csv("sample_data.csv")
+dictionary = read.csv("dict.csv")
 
 
 #######################
