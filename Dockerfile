@@ -1,13 +1,18 @@
-From rocker/tidyverse
+FROM rocker/tidyverse
 
 # install R packages
-Run Rscript -e "install.packages('pander','ggplot2','glmnet','ordinalNet','doParallel')"
+RUN Rscript -e "install.packages(c('rmarkdown','pander','ggplot2','glmnet','ordinalNet','doParallel','here'),repos = 'http://cran.us.r-project.org')"
 
 # make a project directory in the container
-Run mkdir /project
+RUN mkdir /project
 
 # copy contents of local folder to project folder in container
 COPY ./ /project/
 
+# make R scripts executable
+RUN chmod +x /project/
+
+WORKDIR /project
+
 # make container entry point build report
-CMD Rscript -e "rmarkdown::render('Rmd/example.Rmd')"
+CMD make -f Makefile
